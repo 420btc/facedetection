@@ -12,8 +12,9 @@ interface Keypoint {
   name?: string;
 }
 
-interface Face {
+interface FaceLandmark {
   keypoints: Keypoint[];
+  // Add other face properties if needed
 }
 
 interface DetectionEvent {
@@ -136,12 +137,23 @@ export default function Home() {
 
   // Clean up on component unmount
   useEffect(() => {
-    runDetector();
+    let mounted = true;
+    
+    const detectFaces = async () => {
+      if (mounted) {
+        await runDetector();
+      }
+    };
+    
+    detectFaces();
+    
     return () => {
+      mounted = false;
       if (animationRef.current && typeof window !== 'undefined') {
         cancelAnimationFrame(animationRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

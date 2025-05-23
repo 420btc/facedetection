@@ -2,8 +2,16 @@
 
 import { useEffect, useRef } from 'react';
 
+interface FaceLandmark {
+  keypoints: Array<{
+    x: number;
+    y: number;
+    name?: string;
+  }>;
+}
+
 interface FaceCounterProps {
-  faces: any[];
+  faces: FaceLandmark[];
   onFaceDetected: (count: number) => void;
 }
 
