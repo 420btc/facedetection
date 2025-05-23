@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import Webcam from 'react-webcam';
+import dynamic from 'next/dynamic';
+
+// Lazy load the FaceSessionTracker to avoid SSR issues with WebGL
+const FaceSessionTracker = dynamic(
+  () => import('@/components/FaceSessionTracker'),
+  { ssr: false }
+);
 
 // Tipos para los keypoints
 interface Keypoint {
@@ -221,6 +228,9 @@ export default function Home() {
           )}
         </div>
       </div>
+      
+      {/* Session Tracker Component */}
+      <FaceSessionTracker isFaceDetected={isFaceDetected} />
     </main>
   );
 }
