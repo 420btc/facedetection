@@ -133,15 +133,15 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 h-full">
-        <h3 className="text-2xl font-semibold mb-3 text-white">📊 Sesión Activa</h3>
+      <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 h-full">
+        <h3 className="text-2xl font-semibold text-white mb-4">📊 Sesión Activa</h3>
         
         <div className="space-y-4">
           <div className="space-y-1">
             <p className="text-sm text-gray-400">Tiempo actual:</p>
             {isRunning ? (
               <div className="space-y-1">
-                <p className="text-xl font-mono text-green-400">
+                <p className="text-2xl font-mono text-green-400 font-medium">
                   {formatDuration(currentSession.elapsedTime)}
                 </p>
                 <p className="text-xs text-gray-400">
@@ -153,13 +153,13 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
             )}
           </div>
           
-          <div className="border-t border-gray-700 pt-3">
-            <div className="flex justify-between items-center mb-2">
+          <div className="border-t border-gray-700 pt-4">
+            <div className="flex justify-between items-center mb-3">
               <h4 className="text-sm font-medium text-gray-300">Historial de Sesiones</h4>
               {sessions.length > 0 && (
                 <button 
                   onClick={clearSessions}
-                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  className="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition-colors"
                   title="Borrar historial"
                 >
                   Borrar todo
@@ -169,33 +169,31 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
             {sessions.length > 0 ? (
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                 {sessions.map((session, index) => (
-                  <div key={session.id} className="text-xs p-2 bg-gray-800 rounded-lg space-y-1">
+                  <div key={session.id} className="text-xs p-3 bg-gray-800 rounded-lg space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-xs">Duración:</span>
-                      <span className="text-white">{formatDuration(session.duration)}</span>
+                      <span className="text-white font-medium">{formatDuration(session.duration)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
                         <span className="text-green-400 text-xs">
                           ▲
                         </span>
-                        <span className="text-gray-400 text-xs ml-1">Inicio:</span>
-                        <span className="text-green-400 text-xs ml-1">
-                          {formatTimeWithAMPM(session.startTime)}
-                        </span>
+                        <span className="text-gray-400 ml-1 text-xs">Inicio:</span>
                       </div>
-                      {session.endTime && (
+                      <span className="text-white text-xs">{formatDateTime(session.startTime)}</span>
+                    </div>
+                    {session.endTime && (
+                      <div className="flex justify-between items-center">
                         <div className="flex items-center">
                           <span className="text-red-400 text-xs">
                             ▼
                           </span>
-                          <span className="text-gray-400 text-xs ml-1">Fin:</span>
-                          <span className="text-red-400 text-xs ml-1">
-                            {formatTimeWithAMPM(session.endTime)}
-                          </span>
+                          <span className="text-gray-400 ml-1 text-xs">Fin:</span>
                         </div>
-                      )}
-                    </div>
+                        <span className="text-white text-xs">{formatDateTime(session.endTime)}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

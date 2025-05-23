@@ -37,8 +37,28 @@ export default function Home() {
   const detectorRef = useRef<faceLandmarksDetection.FaceLandmarksDetector | null>(null);
   const wasFaceDetected = useRef(false);
   const [faceCount, setFaceCount] = useState(0);
-  const [detectionHistory, setDetectionHistory] = useState<DetectionEvent[]>([]);
+  const [detectionHistory, setDetectionHistory] = useState<DetectionEvent[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('faceDetectionHistory');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
   const [isFaceDetected, setIsFaceDetected] = useState(false);
+  
+  // Guardar historial en localStorage cuando cambie
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faceDetectionHistory', JSON.stringify(detectionHistory));
+    }
+  }, [detectionHistory]);
+  
+  // Función para limpiar el historial de detecciones
+  const clearDetectionHistory = () => {
+    if (confirm('¿Estás seguro de que quieres borrar todo el historial de detecciones?')) {
+      setDetectionHistory([]);
+    }
+  };
 
   // Input resolution configuration
   const inputResolution = { width: 640, height: 480 };
@@ -213,8 +233,19 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto" style={{ height: '292px' }}>
-          <h3 className="text-2xl font-semibold mb-4 text-white text-center">📜 Historial de detecciones</h3>
+        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto flex flex-col" style={{ height: '292px' }}>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-2xl font-semibold text-white">📜 Historial de detecciones</h3>
+            {detectionHistory.length > 0 && (
+              <button
+                onClick={clearDetectionHistory}
+                className="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition-colors"
+                title="Borrar historial de detecciones"
+              >
+                Borrar todo
+              </button>
+            )}
+          </div>
           {detectionHistory.length === 0 ? (
             <p className="text-gray-400 text-center my-6">No hay detecciones registradas</p>
           ) : (
