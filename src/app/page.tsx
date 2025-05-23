@@ -3,25 +3,30 @@
 import { useEffect, useRef } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
-import dynamic from 'next/dynamic';
+import Webcam from 'react-webcam';
 
-// Dynamically import Webcam to avoid SSR issues
-const Webcam = dynamic(
-  () => import('react-webcam'),
-  { ssr: false }
-);
+// Tipos para los keypoints
+interface Keypoint {
+  x: number;
+  y: number;
+  name?: string;
+}
+
+interface Face {
+  keypoints: Keypoint[];
+}
 
 export default function Home() {
-  const webcamRef = useRef<any>(null);
+  const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
 
   // Input resolution configuration
   const inputResolution = { width: 640, height: 480 };
-  const videoConstraints = {
-    width: inputResolution.width,
-    height: inputResolution.height,
-    facingMode: 'user', // Use front camera
+  const videoConstraints: MediaTrackConstraints = {
+    width: { ideal: inputResolution.width },
+    height: { ideal: inputResolution.height },
+    facingMode: 'user',
   };
 
   // Load and configure the model
@@ -34,9 +39,10 @@ export default function Home() {
 
       // Load the MediaPipe FaceMesh model
       const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
-      const detectorConfig = {
+      const detectorConfig: faceLandmarksDetection.MediaPipeFaceMeshMediaPipeModelConfig = {
         runtime: 'mediapipe',
         solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
+        refineLandmarks: true,
       };
       
       const detector = await faceLandmarksDetection.createDetector(model, detectorConfig);
@@ -63,11 +69,11 @@ export default function Home() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
           // Draw facial landmarks
-          faces.forEach((face: any) => {
-            face.keypoints.forEach((keypoint: any) => {
-              if (keypoint.name && keypoint.name.includes('lips')) {
+          faces.forEach((face: Face) => {
+            face.keypoints.forEach((keypoint: Keypoint) => {
+              if (keypoint.name?.includes('lips')) {
                 ctx.fillStyle = '#FF0000'; // Red for lips
-              } else if (keypoint.name && keypoint.name.includes('eye')) {
+              } else if (keypoint.name?.includes('eye')) {
                 ctx.fillStyle = '#00FF00'; // Green for eyes
               } else {
                 ctx.fillStyle = '#0000FF'; // Blue for other points
