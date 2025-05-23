@@ -149,8 +149,8 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Detección de Puntos Faciales</h1>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 text-white">
+      <h1 className="text-3xl font-bold mb-8 text-white">Detección de Puntos Faciales</h1>
       <div className="relative">
         <Webcam
           ref={webcamRef}
@@ -168,34 +168,51 @@ export default function Home() {
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl mx-auto mt-6">
-        <div className="text-center">
-          <div className="mb-4 p-4 bg-gray-200 rounded-lg">
-            <p className="text-2xl font-bold">Caras detectadas: <span className="text-blue-600">{faceCount}</span></p>
-            <p className="text-sm text-gray-600 mt-2">
-              {isFaceDetected ? 'Cara detectada' : 'Esperando detección...'}
-            </p>
+        <div className="flex flex-col gap-6 h-[100px]">
+          <div className="text-center">
+          <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700">
+            <p className="text-2xl font-bold">Caras detectadas: <span className="text-blue-400">{faceCount}</span></p>
+            <div className="mt-4 text-center text-gray-300">
+              {isFaceDetected ? '✅ Cara detectada' : '👀 Esperando detección...'}
+            </div>
           </div>
-          <div className="p-4 bg-white rounded-lg shadow">
-            <p className="text-lg font-semibold mb-2">Instrucciones</p>
-            <ul className="text-sm text-left space-y-1 text-gray-600">
-              <li>• El contador aumenta cada vez que se detecta una cara</li>
-              <li>• Los puntos azules muestran los puntos faciales generales</li>
-              <li>• Los puntos verdes resaltan los ojos</li>
-              <li>• Los puntos rojos marcan los labios</li>
+          <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 flex-1">
+            <p className="text-xl font-semibold mb-4 text-white">📋 Instrucciones</p>
+            <ul className="text-sm text-left space-y-2 text-gray-300">
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>El contador aumenta cada vez que se detecta una cara</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Los puntos <span className="text-blue-400">azules</span> muestran los puntos faciales generales</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Los puntos <span className="text-red-400">rojos</span> marcan los labios</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Los puntos <span className="text-green-400">verdes</span> marcan los ojos</span>
+              </li>
             </ul>
+          </div>
           </div>
         </div>
         
-        <div className="bg-white p-4 rounded-lg shadow max-h-96 overflow-y-auto">
-          <h3 className="text-lg font-semibold mb-3 text-center">Historial de detecciones</h3>
+        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto" style={{ height: '320px' }}>
+          <h3 className="text-xl font-semibold mb-4 text-white text-center">📜 Historial de detecciones</h3>
           {detectionHistory.length === 0 ? (
-            <p className="text-gray-500 text-center my-4">No hay detecciones registradas</p>
+            <p className="text-gray-400 text-center my-6">No hay detecciones registradas</p>
           ) : (
-            <ul className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-700">
               {detectionHistory.map((event, index) => (
-                <li key={event.id} className="py-2 flex justify-between items-center">
-                  <span className="text-sm">Detección #{detectionHistory.length - index}</span>
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                <li key={event.id} className="py-3 flex justify-between items-center hover:bg-gray-800 px-2 rounded-lg transition-colors">
+                  <span className="text-gray-200">
+                    <span className="font-medium">Detección #{detectionHistory.length - index}</span>
+                    <span className="text-xs text-gray-400 ml-2">ID: {event.id}</span>
+                  </span>
+                  <span className="text-xs bg-gray-800 text-gray-300 px-3 py-1 rounded-full border border-gray-600">
                     {event.timeString}
                   </span>
                 </li>

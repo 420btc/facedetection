@@ -3,19 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-mid-rgb: 76, 29, 149;
+  --background-end-rgb: 0, 0, 0;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-mid-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Asegurar que el contenido principal ocupe al menos toda la altura de la pantalla */
+#__next {
+  min-height: 100vh;
 }
