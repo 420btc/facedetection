@@ -168,7 +168,7 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
             </div>
             {sessions.length > 0 ? (
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                {sessions.map((session, index) => (
+                {sessions.map((session) => (
                   <div key={session.id} className="text-xs p-3 bg-gray-800 rounded-lg space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-xs">Duración:</span>
