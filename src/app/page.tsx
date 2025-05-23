@@ -156,26 +156,36 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 text-white">
-      <h1 className="text-3xl font-bold mb-8 text-white">Detección de Puntos Faciales</h1>
-      <div className="relative">
-        <Webcam
-          ref={webcamRef}
-          audio={false}
-          videoConstraints={videoConstraints}
-          className="rounded-lg shadow-lg"
-          width={inputResolution.width}
-          height={inputResolution.height}
-        />
-        <canvas
-          ref={canvasRef}
-          width={inputResolution.width}
-          height={inputResolution.height}
-          className="absolute top-0 left-0"
-        />
+    <main className="flex flex-col items-center min-h-screen p-4 text-white">
+      <h1 className="text-3xl font-bold mb-6 text-white">FaceTime Tracker</h1>
+      
+      {/* Webcam and Session Tracker Row */}
+      <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl">
+        {/* Webcam */}
+        <div className="relative w-full" style={{ maxWidth: '700px' }}>
+          <Webcam
+            ref={webcamRef}
+            audio={false}
+            videoConstraints={videoConstraints}
+            className="rounded-lg shadow-lg w-full h-auto"
+            width={inputResolution.width}
+            height={inputResolution.height}
+          />
+          <canvas
+            ref={canvasRef}
+            width={inputResolution.width}
+            height={inputResolution.height}
+            className="absolute top-0 left-0 w-full h-full"
+          />
+        </div>
+        
+        {/* Session Tracker - Sidebar */}
+        <div className="md:w-[35rem] flex-shrink-0">
+          <FaceSessionTracker isFaceDetected={isFaceDetected} />
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl mx-auto mt-6">
-        <div className="flex flex-col gap-6 h-[100px]">
+        <div className="flex flex-col gap-6 h-[400px]">
           <div className="text-center">
           <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700">
             <p className="text-2xl font-bold">Caras detectadas: <span className="text-blue-400">{faceCount}</span></p>
@@ -198,17 +208,13 @@ export default function Home() {
                 <span className="mr-2">•</span>
                 <span>Los puntos <span className="text-red-400">rojos</span> marcan los labios</span>
               </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Los puntos <span className="text-green-400">verdes</span> marcan los ojos</span>
-              </li>
             </ul>
           </div>
           </div>
         </div>
         
-        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto" style={{ height: '320px' }}>
-          <h3 className="text-xl font-semibold mb-4 text-white text-center">📜 Historial de detecciones</h3>
+        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto" style={{ height: '292px' }}>
+          <h3 className="text-2xl font-semibold mb-4 text-white text-center">📜 Historial de detecciones</h3>
           {detectionHistory.length === 0 ? (
             <p className="text-gray-400 text-center my-6">No hay detecciones registradas</p>
           ) : (
@@ -229,8 +235,7 @@ export default function Home() {
         </div>
       </div>
       
-      {/* Session Tracker Component */}
-      <FaceSessionTracker isFaceDetected={isFaceDetected} />
+
     </main>
   );
 }

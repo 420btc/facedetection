@@ -19,9 +19,32 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
     elapsedTime: number;
   }>({ startTime: null, elapsedTime: 0 });
   
-  const [sessions, setSessions] = useState<FaceSession[]>([]);
+  // Load sessions from localStorage on component mount
+  const [sessions, setSessions] = useState<FaceSession[]>(() => {
+    if (typeof window === 'undefined') return [];
+    const saved = localStorage.getItem('faceDetectionSessions');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
   const [isRunning, setIsRunning] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
+  
+  // Clear all sessions
+  const clearSessions = (): void => {
+    if (typeof window !== 'undefined') {
+      if (confirm('¿Estás seguro de que quieres borrar todo el historial de sesiones?')) {
+        localStorage.removeItem('faceDetectionSessions');
+        setSessions([]);
+      }
+    }
+  };
+
+  // Save sessions to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faceDetectionSessions', JSON.stringify(sessions));
+    }
+  }, [sessions]);
 
   // Handle session tracking
   useEffect(() => {
@@ -59,7 +82,20 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
         duration: currentSession.elapsedTime + ((endTime - lastUpdate) / 1000)
       };
       
-      setSessions(prev => [newSession, ...prev]);
+      // Prevent duplicate sessions
+      setSessions(prev => {
+        // Check if a session with this ID already exists
+        const sessionExists = prev.some(session => 
+          session.id === newSession.id || 
+          (session.startTime === newSession.startTime && session.endTime === newSession.endTime)
+        );
+        
+        if (sessionExists) {
+          return prev; // Skip adding if duplicate exists
+        }
+        
+        return [newSession, ...prev];
+      });
       setIsRunning(false);
     }
 
@@ -81,50 +117,90 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
     ].join(':');
   };
 
-  const formatDateTime = (timestamp: number): string => {
-    return new Date(timestamp).toLocaleString();
+  const formatTimeWithAMPM = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const milliseconds = Math.floor(date.getMilliseconds() / 10).toString().padStart(2, '0');
+    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    
+    return `${hours}:${minutes}:${seconds}.${milliseconds} ${ampm}`;
   };
+  
+  // Alias para mantener compatibilidad
+  const formatDateTime = formatTimeWithAMPM;
 
   return (
-    <div className="mt-6 w-full max-w-6xl mx-auto">
-      <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700">
-        <h3 className="text-xl font-semibold mb-4 text-white">📊 Sesión de Detección</h3>
+    <div className="h-full flex flex-col">
+      <div className="p-4 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 h-full">
+        <h3 className="text-2xl font-semibold mb-3 text-white">📊 Sesión Activa</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-lg font-medium text-gray-300 mb-2">Sesión Actual</h4>
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <p className="text-sm text-gray-400">Tiempo actual:</p>
             {isRunning ? (
-              <div className="space-y-2">
-                <p className="text-2xl font-mono text-green-400">
+              <div className="space-y-1">
+                <p className="text-xl font-mono text-green-400">
                   {formatDuration(currentSession.elapsedTime)}
                 </p>
-                <p className="text-sm text-gray-400">
+                <p className="text-xs text-gray-400">
                   Inició: {formatDateTime(currentSession.startTime || Date.now())}
                 </p>
               </div>
             ) : (
-              <p className="text-gray-400">No hay sesión activa</p>
+              <p className="text-sm text-gray-400">Inactivo</p>
             )}
           </div>
           
-          <div>
-            <h4 className="text-lg font-medium text-gray-300 mb-2">Últimas Sesiones</h4>
+          <div className="border-t border-gray-700 pt-3">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-sm font-medium text-gray-300">Historial de Sesiones</h4>
+              {sessions.length > 0 && (
+                <button 
+                  onClick={clearSessions}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  title="Borrar historial"
+                >
+                  Borrar todo
+                </button>
+              )}
+            </div>
             {sessions.length > 0 ? (
-              <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
-                {sessions.slice(0, 3).map(session => (
-                  <div key={session.id} className="text-sm p-2 bg-gray-800 rounded-lg">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">{formatDateTime(session.startTime)}</span>
-                      <span className="font-mono text-blue-400">{formatDuration(session.duration)}</span>
+              <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                {sessions.map((session, index) => (
+                  <div key={session.id} className="text-xs p-2 bg-gray-800 rounded-lg space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-xs">Duración:</span>
+                      <span className="text-white">{formatDuration(session.duration)}</span>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Finalizó: {session.endTime ? formatDateTime(session.endTime) : 'En curso'}
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <span className="text-green-400 text-xs">
+                          ▲
+                        </span>
+                        <span className="text-gray-400 text-xs ml-1">Inicio:</span>
+                        <span className="text-green-400 text-xs ml-1">
+                          {formatTimeWithAMPM(session.startTime)}
+                        </span>
+                      </div>
+                      {session.endTime && (
+                        <div className="flex items-center">
+                          <span className="text-red-400 text-xs">
+                            ▼
+                          </span>
+                          <span className="text-gray-400 text-xs ml-1">Fin:</span>
+                          <span className="text-red-400 text-xs ml-1">
+                            {formatTimeWithAMPM(session.endTime)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-sm">No hay sesiones registradas</p>
+              <p className="text-gray-500 text-xs">Sin registros</p>
             )}
           </div>
         </div>
