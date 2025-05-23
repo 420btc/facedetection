@@ -12,19 +12,11 @@ interface Keypoint {
   name?: string;
 }
 
-interface FaceLandmark {
-  keypoints: Keypoint[];
-  // Add other face properties if needed
-}
-
 interface DetectionEvent {
   id: number;
   timestamp: number;
   timeString: string;
 }
-
-// Tiempo en milisegundos que debe pasar sin detectar una cara para considerar una nueva detección
-const FACE_DETECTION_TIMEOUT = 2000;
 
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -106,8 +98,8 @@ export default function Home() {
         wasFaceDetected.current = hasFace;
         
         // Draw facial landmarks
-        faces.forEach((face: any) => {
-          face.keypoints.forEach((keypoint: any) => {
+        faces.forEach((face: { keypoints: Keypoint[] }) => {
+          face.keypoints.forEach((keypoint: Keypoint) => {
             if (keypoint.name?.includes('lips')) {
               ctx.fillStyle = '#FF0000'; // Rojo para labios
             } else if (keypoint.name?.includes('eye')) {
