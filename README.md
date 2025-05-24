@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="/public/iconox.png" alt="FaceTime Tracker Logo" width="200" />
+  <h1>FaceTime Tracker</h1>
+  <p>Monitor de Tiempo de Exposición a la Cámara</p>
+  <p><em>Creado por Carlos Freire - 23 de Mayo 2025</em></p>
+</div>
 
-## Getting Started
+## 🎯 ¿Qué es FaceTime Tracker?
 
-First, run the development server:
+FaceTime Tracker es una aplicación web que utiliza inteligencia artificial para detectar y registrar el tiempo que pasas frente a la cámara. Especialmente útil para medir la exposición a videollamadas, clases virtuales o cualquier actividad que requiera el uso de cámara web.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Características Principales
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 👁️ Detección facial en tiempo real
+- ⏱️ Registro preciso del tiempo de exposición
+- 📊 Historial de sesiones
+- 📱 Diseño responsivo (funciona en móviles y escritorio)
+- 🌈 Interfaz intuitiva y moderna
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tecnologías Utilizadas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🤖 TensorFlow.js
+TensorFlow.js es una biblioteca de código abierto desarrollada por Google para entrenar y desplegar modelos de aprendizaje automático en el navegador. En este proyecto, utilizamos TensorFlow.js junto con el modelo Face Landmarks Detection para la detección facial precisa.
 
-## Learn More
+### ⚛️ Next.js 13+
+Framework de React que permite la renderización del lado del servidor, generación de sitios estáticos y otras características avanzadas para aplicaciones web modernas.
 
-To learn more about Next.js, take a look at the following resources:
+### 📦 Otros Módulos Clave
+- `@tensorflow/tfjs`: Biblioteca principal de TensorFlow.js
+- `@tensorflow-models/face-landmarks-detection`: Modelo pre-entrenado para detección de puntos faciales
+- `react-webcam`: Componente de React para acceder a la cámara web
+- `tailwindcss`: Framework CSS para estilos rápidos y responsivos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Cómo Empezar
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Requisitos Previos
+- Node.js 16.8 o superior
+- NPM o Yarn
+- Navegador web moderno con soporte para WebGL
 
-## Deploy on Vercel
+### Instalación
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clona el repositorio:
+   ```bash
+   git clone [URL_DEL_REPOSITORIO]
+   cd mi-app-deteccion-facial
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Instala las dependencias:
+   ```bash
+   npm install
+   # o
+   yarn install
+   ```
+
+3. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   # o
+   yarn dev
+   ```
+
+4. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+
+## 📝 Uso
+
+1. Concede los permisos de cámara cuando se te solicite.
+2. La aplicación comenzará a detectar automáticamente tu rostro.
+3. El contador registrará el tiempo que pasas frente a la cámara.
+4. Revisa tu historial de sesiones en la sección correspondiente.
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Siéntete libre de abrir un issue o enviar un pull request.
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+---
+
+<p align="center">
+  <em>Desarrollado con ❤️ por Carlos Freire</em>
+</p>
+
