@@ -61,20 +61,57 @@ export default function Home() {
   };
 
   // Input resolution configuration
-  const inputResolution = { width: 640, height: 480 };
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const inputResolution = { width: 640, height: 480 }; // Tamaño fijo para escritorio
+    
   const videoConstraints: MediaTrackConstraints = {
     width: { ideal: inputResolution.width },
     height: { ideal: inputResolution.height },
     facingMode: 'user',
+    aspectRatio: 1.333, // 4:3 para mantener relación de aspecto
   };
+  
+  // Dimensiones fijas para el canvas
+  const [dimensions, setDimensions] = useState(inputResolution);
+  
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 768) {
+          // Para móviles: ajustar al ancho de la pantalla
+          const width = Math.min(360, window.innerWidth - 40);
+          setDimensions({
+            width,
+            height: width * (4/3) // Mantener relación 4:3
+          });
+        } else {
+          // Para escritorio: tamaño fijo 640x480
+          setDimensions({
+            width: inputResolution.width,
+            height: inputResolution.height
+          });
+        }
+      }
+    };
+    
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
 
   // Load and configure the model
   const runDetector = async () => {
     try {
-      // Set WebGL backend
-      await tf.setBackend('webgl');
-      await tf.ready();
-      console.log('TensorFlow.js is ready');
+      // Set WebGL backend with fallback to CPU if needed
+      try {
+        await tf.setBackend('webgl');
+        await tf.ready();
+        console.log('TensorFlow.js is ready with WebGL');
+      } catch (e) {
+        console.warn('WebGL not available, falling back to CPU');
+        await tf.setBackend('cpu');
+        await tf.ready();
+      }
 
       // Load the MediaPipe FaceMesh model
       const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
@@ -182,21 +219,37 @@ export default function Home() {
       {/* Webcam and Session Tracker Row */}
       <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl">
         {/* Webcam */}
-        <div className="relative" style={{ width: `${inputResolution.width}px`, height: `${inputResolution.height}px` }}>
+        <div className="relative w-full max-w-full md:max-w-[640px]" 
+             style={{ 
+               height: isMobile ? 'auto' : '480px',
+               width: isMobile ? 'auto' : '640px',
+               aspectRatio: isMobile ? '3/4' : '4/3'
+             }}>
           <Webcam
             ref={webcamRef}
             audio={false}
             videoConstraints={videoConstraints}
             className="rounded-lg shadow-lg w-full h-full object-cover"
-            width={inputResolution.width}
-            height={inputResolution.height}
+            width={dimensions.width}
+            height={dimensions.height}
+            style={{
+              transform: isMobile ? 'scaleX(-1)' : 'none', // Espejo en móvil
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
           />
           <canvas
             ref={canvasRef}
-            width={inputResolution.width}
-            height={inputResolution.height}
+            width={dimensions.width}
+            height={dimensions.height}
             className="absolute top-0 left-0 w-full h-full"
-            style={{ transform: 'translateZ(0)' }}
+            style={{
+              transform: isMobile ? 'scaleX(-1)' : 'none', // Espejo en móvil
+              transformOrigin: 'center',
+              touchAction: 'none',
+              zIndex: 10
+            }}
           />
         </div>
         
