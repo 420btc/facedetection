@@ -133,8 +133,47 @@ export default function Home() {
         setIsFaceDetected(hasFace);
         wasFaceDetected.current = hasFace;
         
-        // Draw facial landmarks
+        // Draw facial landmarks and bounding box
         faces.forEach((face: { keypoints: Keypoint[] }) => {
+          // Calcular bounding box basado en los keypoints
+          if (face.keypoints && face.keypoints.length > 0) {
+            let minX = Infinity, minY = Infinity;
+            let maxX = -Infinity, maxY = -Infinity;
+            
+            // Encontrar los límites de los keypoints
+            face.keypoints.forEach((keypoint: Keypoint) => {
+              minX = Math.min(minX, keypoint.x);
+              minY = Math.min(minY, keypoint.y);
+              maxX = Math.max(maxX, keypoint.x);
+              maxY = Math.max(maxY, keypoint.y);
+            });
+            
+            // Añadir un poco de margen
+            const margin = 20;
+            minX = Math.max(0, minX - margin);
+            minY = Math.max(0, minY - margin);
+            maxX = Math.min(canvas.width, maxX + margin);
+            maxY = Math.min(canvas.height, maxY + margin);
+            
+            const width = maxX - minX;
+            const height = maxY - minY;
+            
+            // Dibujar el bounding box
+            ctx.strokeStyle = '#00FF00'; // Color verde para el borde
+            ctx.lineWidth = 2;
+            ctx.strokeRect(minX, minY, width, height);
+            
+            // Añadir etiqueta con fondo para mejor legibilidad
+            const label = 'Cara detectada';
+            const textWidth = ctx.measureText(label).width;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(minX - 2, minY - 17, textWidth + 4, 16);
+            ctx.fillStyle = '#00FF00';
+            ctx.font = '12px Arial';
+            ctx.fillText(label, minX, minY > 10 ? minY - 5 : 10);
+          }
+          
+          // Dibujar puntos de referencia faciales
           face.keypoints.forEach((keypoint: Keypoint) => {
             if (keypoint.name?.includes('lips')) {
               ctx.fillStyle = '#FF0000'; // Rojo para labios
