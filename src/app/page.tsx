@@ -206,22 +206,71 @@ export default function Home() {
     }
   };
 
-  // Clean up on component unmount
+  // Load saved state on component mount
+  useEffect(() => {
+    const savedFaceCount = localStorage.getItem('faceCount');
+    const savedHistory = localStorage.getItem('faceDetectionHistory');
+    
+    if (savedFaceCount) setFaceCount(parseInt(savedFaceCount, 10));
+    if (savedHistory) setDetectionHistory(JSON.parse(savedHistory));
+  }, []);
+
+  // Save state when it changes
+  useEffect(() => {
+    localStorage.setItem('faceCount', faceCount.toString());
+  }, [faceCount]);
+
+  // Manejar cuando la pestaña está en segundo plano/primer plano
   useEffect(() => {
     let mounted = true;
+    let lastFaceState = isFaceDetected;
+    let lastFaceTime = Date.now();
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        // Si volvemos a la pestaña, reiniciamos la detección
+        if (mounted) {
+          await runDetector();
+          // Si había una cara detectada antes de irnos, la mantenemos
+          if (lastFaceState) {
+            const now = Date.now();
+            const timeDiff = Math.floor((now - lastFaceTime) / 1000); // diferencia en segundos
+            if (timeDiff > 0) {
+              // Actualizamos el contador con el tiempo que pasó
+              setFaceCount(prev => prev + timeDiff);
+            }
+          }
+        }
+      } else {
+        // Guardamos el estado actual antes de irnos
+        lastFaceState = isFaceDetected;
+        lastFaceTime = Date.now();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    const detectFaces = async () => {
+    // Iniciar detección inicial
+    const initDetection = async () => {
       if (mounted) {
         await runDetector();
       }
     };
     
-    detectFaces();
+    initDetection();
     
     return () => {
       mounted = false;
-      if (animationRef.current && typeof window !== 'undefined') {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+      }
+      // No detenemos la cámara completamente para evitar solicitudes de permisos
+      if (webcamRef.current?.video?.srcObject) {
+        const stream = webcamRef.current.video.srcObject as MediaStream;
+        stream.getTracks().forEach(track => {
+          track.stop();
+        });
       }
     };
   }, []);
