@@ -31,7 +31,6 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
   
   const [isRunning, setIsRunning] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
-  const [sortBy, setSortBy] = useState<'recent' | 'duration'>('recent');
   
   // Clear all sessions
   const clearSessions = (): void => {
