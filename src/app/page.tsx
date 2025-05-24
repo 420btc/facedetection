@@ -141,11 +141,11 @@ export default function Home() {
             } else if (keypoint.name?.includes('eye')) {
               ctx.fillStyle = '#00FF00'; // Verde para ojos
             } else {
-              ctx.fillStyle = '#0000FF'; // Azul para otros puntos
+              ctx.fillStyle = '#FFFFFF'; // Blanco para otros puntos
             }
             
             ctx.beginPath();
-            ctx.arc(keypoint.x, keypoint.y, 2, 0, 2 * Math.PI);
+            ctx.arc(keypoint.x, keypoint.y, 1, 0, 2 * Math.PI);
             ctx.fill();
           });
         });
