@@ -134,60 +134,64 @@ export default function Home() {
         wasFaceDetected.current = hasFace;
         
         // Draw facial landmarks and bounding box
+        const isMobile = window.innerWidth < 768; // Detectar si es móvil
+        
         faces.forEach((face: { keypoints: Keypoint[] }) => {
-          // Calcular bounding box basado en los keypoints
-          if (face.keypoints && face.keypoints.length > 0) {
-            let minX = Infinity, minY = Infinity;
-            let maxX = -Infinity, maxY = -Infinity;
-            
-            // Encontrar los límites de los keypoints
-            face.keypoints.forEach((keypoint: Keypoint) => {
-              minX = Math.min(minX, keypoint.x);
-              minY = Math.min(minY, keypoint.y);
-              maxX = Math.max(maxX, keypoint.x);
-              maxY = Math.max(maxY, keypoint.y);
-            });
-            
-            // Añadir un poco de margen
-            const margin = 20;
-            minX = Math.max(0, minX - margin);
-            minY = Math.max(0, minY - margin);
-            maxX = Math.min(canvas.width, maxX + margin);
-            maxY = Math.min(canvas.height, maxY + margin);
-            
-            const width = maxX - minX;
-            const height = maxY - minY;
-            
-            // Dibujar el bounding box
-            ctx.strokeStyle = '#00FF00'; // Color verde para el borde
-            ctx.lineWidth = 2;
-            ctx.strokeRect(minX, minY, width, height);
-            
-            // Añadir etiqueta con fondo para mejor legibilidad
-            const label = 'Cara detectada';
-            const textWidth = ctx.measureText(label).width;
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.fillRect(minX - 2, minY - 17, textWidth + 4, 16);
-            ctx.fillStyle = '#00FF00';
-            ctx.font = '12px Arial';
-            ctx.fillText(label, minX, minY > 10 ? minY - 5 : 10);
-          }
+          if (!face.keypoints || face.keypoints.length === 0) return;
           
-          // Dibujar puntos de referencia faciales
+          // Calcular bounding box basado en los keypoints
+          let minX = Infinity, minY = Infinity;
+          let maxX = -Infinity, maxY = -Infinity;
+          
+          // Encontrar los límites de los keypoints
           face.keypoints.forEach((keypoint: Keypoint) => {
-            if (keypoint.name?.includes('lips')) {
-              ctx.fillStyle = '#FF0000'; // Rojo para labios
-            } else if (keypoint.name?.includes('eye')) {
-              ctx.fillStyle = '#00FF00'; // Verde para ojos
-            } else {
-              ctx.fillStyle = '#FFFFFF'; // Blanco para otros puntos
-            }
-            
-            ctx.beginPath();
-            ctx.arc(keypoint.x, keypoint.y, 1, 0, 2 * Math.PI);
-            ctx.fill();
+            minX = Math.min(minX, keypoint.x);
+            minY = Math.min(minY, keypoint.y);
+            maxX = Math.max(maxX, keypoint.x);
+            maxY = Math.max(maxY, keypoint.y);
           });
-        });
+          
+          // Añadir un poco de margen
+          const margin = 20;
+          minX = Math.max(0, minX - margin);
+          minY = Math.max(0, minY - margin);
+          maxX = Math.min(canvas.width, maxX + margin);
+          maxY = Math.min(canvas.height, maxY + margin);
+          
+          const width = maxX - minX;
+          const height = maxY - minY;
+          
+          // Dibujar el bounding box (siempre visible)
+          ctx.strokeStyle = '#00FF00'; // Color verde para el borde
+          ctx.lineWidth = 2;
+          ctx.strokeRect(minX, minY, width, height);
+          
+          // Añadir etiqueta con fondo para mejor legibilidad
+          const label = 'Cara detectada';
+          const textWidth = ctx.measureText(label).width;
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(minX - 2, minY - 17, textWidth + 4, 16);
+          ctx.fillStyle = '#00FF00';
+          ctx.font = '12px Arial';
+          ctx.fillText(label, minX, minY > 10 ? minY - 5 : 10);
+          
+          // Solo dibujar puntos en PC
+          if (!isMobile) {
+            face.keypoints.forEach((keypoint: Keypoint) => {
+              if (keypoint.name?.includes('lips')) {
+                ctx.fillStyle = '#FF0000'; // Rojo para labios
+              } else if (keypoint.name?.includes('eye')) {
+                ctx.fillStyle = '#00FF00'; // Verde para ojos
+              } else {
+                ctx.fillStyle = '#FFFFFF'; // Blanco para otros puntos
+              }
+              
+              ctx.beginPath();
+              ctx.arc(keypoint.x, keypoint.y, 1, 0, 2 * Math.PI);
+              ctx.fill();
+            });
+          }
+        }); // Cierre del forEach de caras
         
         // Continue detection in the next frame
         if (typeof window !== 'undefined') {
