@@ -217,35 +217,28 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-6 text-white">FaceTime Tracker</h1>
       
       {/* Webcam and Session Tracker Row */}
-      <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl">
+      <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl">
         {/* Webcam */}
-        <div className="relative w-full max-w-full md:max-w-[640px]" 
-             style={{ 
-               height: isMobile ? 'auto' : '480px',
-               width: isMobile ? 'auto' : '640px',
-               aspectRatio: isMobile ? '3/4' : '4/3'
-             }}>
+        <div className="relative w-full lg:w-[640px] h-[480px] bg-black rounded-xl overflow-hidden">
           <Webcam
             ref={webcamRef}
             audio={false}
             videoConstraints={videoConstraints}
-            className="rounded-lg shadow-lg w-full h-full object-cover"
-            width={dimensions.width}
-            height={dimensions.height}
+            className="w-full h-full object-cover"
+            width={640}
+            height={480}
             style={{
-              transform: isMobile ? 'scaleX(-1)' : 'none', // Espejo en móvil
-              width: '100%',
-              height: '100%',
+              transform: isMobile ? 'scaleX(-1)' : 'none',
               objectFit: 'cover'
             }}
           />
           <canvas
             ref={canvasRef}
-            width={dimensions.width}
-            height={dimensions.height}
+            width={640}
+            height={480}
             className="absolute top-0 left-0 w-full h-full"
             style={{
-              transform: isMobile ? 'scaleX(-1)' : 'none', // Espejo en móvil
+              transform: isMobile ? 'scaleX(-1)' : 'none',
               transformOrigin: 'center',
               touchAction: 'none',
               zIndex: 10
@@ -254,40 +247,40 @@ export default function Home() {
         </div>
         
         {/* Session Tracker - Sidebar */}
-        <div className="md:w-[35rem] flex-shrink-0" style={{ height: '480px' }}>
+        <div className="w-full lg:flex-1 h-[480px]">
           <FaceSessionTracker isFaceDetected={isFaceDetected} />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl mx-auto mt-6">
         <div className="flex flex-col gap-6 h-[400px]">
           <div className="text-center">
-          <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700">
-            <p className="text-2xl font-bold">Caras detectadas: <span className="text-blue-400">{faceCount}</span></p>
-            <div className="mt-4 text-center text-gray-300">
-              {isFaceDetected ? '✅ Cara detectada' : '👀 Esperando detección...'}
+            <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700">
+              <p className="text-2xl font-bold">Caras conectadas: <span className="text-blue-400">{faceCount}</span></p>
+              <div className="mt-4 text-center text-gray-300">
+                {isFaceDetected ? '✅ Cara conectada' : '👀 Esperando conexión...'}
+              </div>
             </div>
-          </div>
-          <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 flex-1">
-            <p className="text-xl font-semibold mb-4 text-white">📋 Instrucciones</p>
-            <ul className="text-sm text-left space-y-2 text-gray-300">
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>El contador aumenta cada vez que se detecta una cara</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Los puntos <span className="text-blue-400">azules</span> muestran los puntos faciales generales</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Los puntos <span className="text-red-400">rojos</span> marcan los labios</span>
-              </li>
-            </ul>
-          </div>
+            <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 flex-1">
+              <p className="text-xl font-semibold mb-4 text-white">📋 Instrucciones</p>
+              <ul className="text-sm text-left space-y-2 text-gray-300">
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>El contador aumenta cada vez que se detecta una cara</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Los puntos <span className="text-blue-400">azules</span> muestran los puntos faciales generales</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Los puntos <span className="text-red-400">rojos</span> marcan los labios</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         
-        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto flex flex-col" style={{ height: '292px' }}>
+        <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-y-auto flex flex-col" style={{ height: '290px' }}>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-2xl font-semibold text-white">📜 Historial de detecciones</h3>
             {detectionHistory.length > 0 && (
