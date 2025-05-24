@@ -182,12 +182,12 @@ export default function Home() {
       {/* Webcam and Session Tracker Row */}
       <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl">
         {/* Webcam */}
-        <div className="relative w-full" style={{ maxWidth: '700px' }}>
+        <div className="relative" style={{ width: `${inputResolution.width}px`, height: `${inputResolution.height}px` }}>
           <Webcam
             ref={webcamRef}
             audio={false}
             videoConstraints={videoConstraints}
-            className="rounded-lg shadow-lg w-full h-auto"
+            className="rounded-lg shadow-lg w-full h-full object-cover"
             width={inputResolution.width}
             height={inputResolution.height}
           />
@@ -196,11 +196,12 @@ export default function Home() {
             width={inputResolution.width}
             height={inputResolution.height}
             className="absolute top-0 left-0 w-full h-full"
+            style={{ transform: 'translateZ(0)' }}
           />
         </div>
         
         {/* Session Tracker - Sidebar */}
-        <div className="md:w-[35rem] flex-shrink-0">
+        <div className="md:w-[35rem] flex-shrink-0" style={{ height: '480px' }}>
           <FaceSessionTracker isFaceDetected={isFaceDetected} />
         </div>
       </div>

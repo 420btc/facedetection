@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 
-interface FaceSession {
+const SessionHistory = dynamic(() => import('./SessionHistory'), { ssr: false });
+
+export interface FaceSession {
   id: number;
   startTime: number;
   endTime: number | null;
@@ -28,6 +31,7 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
   
   const [isRunning, setIsRunning] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
+  const [sortBy, setSortBy] = useState<'recent' | 'duration'>('recent');
   
   // Clear all sessions
   const clearSessions = (): void => {
@@ -133,10 +137,10 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 h-full">
+      <div className="h-full flex flex-col p-6 bg-gray-900 bg-opacity-70 rounded-xl border border-gray-700 overflow-hidden">
         <h3 className="text-2xl font-semibold text-white mb-4">📊 Sesión Activa</h3>
         
-        <div className="space-y-4">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="space-y-1">
             <p className="text-sm text-gray-400">Tiempo actual:</p>
             {isRunning ? (
@@ -153,54 +157,10 @@ export default function FaceSessionTracker({ isFaceDetected }: FaceSessionTracke
             )}
           </div>
           
-          <div className="border-t border-gray-700 pt-4">
-            <div className="flex justify-between items-center mb-3">
-              <h4 className="text-sm font-medium text-gray-300">Historial de Sesiones</h4>
-              {sessions.length > 0 && (
-                <button 
-                  onClick={clearSessions}
-                  className="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition-colors"
-                  title="Borrar historial"
-                >
-                  Borrar todo
-                </button>
-              )}
-            </div>
-            {sessions.length > 0 ? (
-              <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                {sessions.map((session) => (
-                  <div key={session.id} className="text-xs p-3 bg-gray-800 rounded-lg space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-xs">Duración:</span>
-                      <span className="text-white font-medium">{formatDuration(session.duration)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <span className="text-green-400 text-xs">
-                          ▲
-                        </span>
-                        <span className="text-gray-400 ml-1 text-xs">Inicio:</span>
-                      </div>
-                      <span className="text-white text-xs">{formatDateTime(session.startTime)}</span>
-                    </div>
-                    {session.endTime && (
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                          <span className="text-red-400 text-xs">
-                            ▼
-                          </span>
-                          <span className="text-gray-400 ml-1 text-xs">Fin:</span>
-                        </div>
-                        <span className="text-white text-xs">{formatDateTime(session.endTime)}</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-xs">Sin registros</p>
-            )}
-          </div>
+          <SessionHistory 
+            sessions={sessions}
+            onClearSessions={clearSessions}
+          />
         </div>
       </div>
     </div>
