@@ -97,7 +97,7 @@ export default function Home() {
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+  }, [inputResolution.height, inputResolution.width]); // Añadidas dependencias faltantes
 
   // Load and configure the model
   const runDetector = async () => {
@@ -107,8 +107,8 @@ export default function Home() {
         await tf.setBackend('webgl');
         await tf.ready();
         console.log('TensorFlow.js is ready with WebGL');
-      } catch (e) {
-        console.warn('WebGL not available, falling back to CPU');
+      } catch (error) {
+        console.warn('WebGL not available, falling back to CPU', error);
         await tf.setBackend('cpu');
         await tf.ready();
       }
