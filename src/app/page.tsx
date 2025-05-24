@@ -70,34 +70,6 @@ export default function Home() {
     facingMode: 'user',
     aspectRatio: 1.333, // 4:3 para mantener relación de aspecto
   };
-  
-  // Dimensiones fijas para el canvas
-  const [dimensions, setDimensions] = useState(inputResolution);
-  
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (typeof window !== 'undefined') {
-        if (window.innerWidth < 768) {
-          // Para móviles: ajustar al ancho de la pantalla
-          const width = Math.min(360, window.innerWidth - 40);
-          setDimensions({
-            width,
-            height: width * (4/3) // Mantener relación 4:3
-          });
-        } else {
-          // Para escritorio: tamaño fijo 640x480
-          setDimensions({
-            width: inputResolution.width,
-            height: inputResolution.height
-          });
-        }
-      }
-    };
-    
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, [inputResolution.height, inputResolution.width]); // Añadidas dependencias faltantes
 
   // Load and configure the model
   const runDetector = async () => {
@@ -209,7 +181,6 @@ export default function Home() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
