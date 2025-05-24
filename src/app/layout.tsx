@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FaceTime Tracker",
   description: "Aplicación para medir el tiempo de exposición a la cámara",
+  icons: {
+    icon: '/iconox.png',
+  },
 };
 
 export default function RootLayout({

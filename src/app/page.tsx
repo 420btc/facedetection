@@ -185,7 +185,27 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center min-h-screen p-4 text-white">
-      <h1 className="text-3xl font-bold mb-6 text-white">FaceTime Tracker</h1>
+      <div className="flex flex-col items-center mb-6">
+        <div className="flex items-center justify-center gap-3">
+          {/* Left icon - hidden on mobile */}
+          <img 
+            src="/iconox.png" 
+            alt="Logo" 
+            className="hidden md:block h-9 w-9 object-contain" 
+            style={{ height: '6em', width: 'auto' }}
+          />
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-center">
+            FaceTime Tracker
+          </h1>
+          {/* Right icon - hidden on mobile */}
+          <img 
+            src="/iconox.png" 
+            alt="Logo" 
+            className="hidden md:block h-9 w-9 object-contain" 
+            style={{ height: '6em', width: 'auto' }}
+          />
+        </div>
+      </div>
       
       {/* Webcam and Session Tracker Row */}
       <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl">
